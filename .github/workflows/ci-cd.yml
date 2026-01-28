@@ -27,7 +27,11 @@ jobs:
       run: cd frontend && npm ci
         
     - name: Build frontend
-      run: cd frontend && npm run build
+      run: |
+        cd frontend
+        npm run build
+        ls -la dist/
+        echo "✅ Frontend build successful"
       
     - name: Run unit tests
       run: echo "Skipping tests for faster CI"

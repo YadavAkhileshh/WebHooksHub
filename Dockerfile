@@ -13,6 +13,9 @@ COPY src/ ./src/
 RUN npm ci
 RUN cd frontend && npm ci && npm run build
 
+# Verify build output exists
+RUN ls -la frontend/dist/ || echo "Build output not found"
+
 # Production stage
 FROM node:20-alpine AS production
 
@@ -24,7 +27,7 @@ WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/src ./src
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/frontend/dist ./dist
 
 # Set ownership
 RUN chown -R webhookhub:nodejs /app
