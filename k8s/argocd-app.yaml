@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YadavAkhileshh/webhookhub-k8s.git
+    repoURL: https://github.com/YadavAkhileshh/WebHooksHub.git
     targetRevision: main
-    path: .
+    path: k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: webhookhub

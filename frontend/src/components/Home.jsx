@@ -1,195 +1,179 @@
 import React from 'react'
-import { motion } from 'framer-motion'
-import { Webhook, Shield, Activity, Zap, ArrowRight, Github, Container, Database, Play, Code, Monitor } from 'lucide-react'
+import { ArrowRight, Globe, Shield, Zap, BarChart3, Code, CheckCircle } from 'lucide-react'
 
 const Home = ({ onNavigate }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5
-      }
-    }
-  }
-
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-16">
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-center mb-16"
-        >
-          <motion.div variants={itemVariants} className="flex justify-center items-center mb-6">
-            <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
+      {/* Header */}
+      <header className="border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center mr-3">
+                <Globe className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-semibold text-slate-900">WebhookHub</span>
+            </div>
+            <button
+              onClick={() => onNavigate('dashboard')}
+              className="inline-flex items-center px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors"
             >
-              <Webhook className="w-16 h-16 text-blue-600 mr-4" />
-            </motion.div>
-            <h1 className="text-5xl font-bold text-gray-900">WebhookHub</h1>
-          </motion.div>
-          
-          <motion.p variants={itemVariants} className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Professional webhook monitoring and testing platform
-            <br />
-            <span className="text-blue-600 font-semibold">Built for DevOps Excellence</span>
-          </motion.p>
+              Open Dashboard
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </header>
 
-          <motion.div variants={itemVariants} className="flex justify-center gap-4 mb-12">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center bg-gray-100 px-4 py-2 rounded-full border border-gray-200"
+      {/* Hero Section */}
+      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+            Professional Webhook
+            <span className="block text-slate-600">Testing Platform</span>
+          </h1>
+          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
+            Inspect, debug, and monitor webhooks in real-time. Built for developers who need reliable webhook testing and monitoring.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => onNavigate('dashboard')}
+              className="inline-flex items-center px-6 py-3 bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 transition-colors"
             >
-              <Play className="w-4 h-4 text-green-600 mr-2" />
-              <span className="text-sm text-gray-700">Live Monitoring</span>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center bg-gray-100 px-4 py-2 rounded-full border border-gray-200"
-            >
-              <Shield className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="text-sm text-gray-700">Secure</span>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center bg-gray-100 px-4 py-2 rounded-full border border-gray-200"
-            >
-              <Container className="w-4 h-4 text-purple-600 mr-2" />
-              <span className="text-sm text-gray-700">Docker Ready</span>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+              Get Started
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
 
-        {/* How it Works Section */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mb-16"
-        >
-          <motion.h2 variants={itemVariants} className="text-3xl font-bold text-gray-900 text-center mb-12">
-            How It Works
-          </motion.h2>
+      {/* Features */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Everything you need</h2>
+            <p className="text-lg text-slate-600">Powerful features for webhook testing and monitoring</p>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
-              className="text-center"
-            >
-              <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl">1</span>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Globe className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Create Endpoint</h3>
-              <p className="text-gray-600 text-sm">Generate a unique webhook URL for your application</p>
-            </motion.div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Instant Endpoints</h3>
+              <p className="text-slate-600">Create webhook endpoints instantly. No configuration required.</p>
+            </div>
             
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
-              className="text-center"
-            >
-              <div className="bg-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl">2</span>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-emerald-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Send Webhooks</h3>
-              <p className="text-gray-600 text-sm">Configure your services to send webhooks to your URL</p>
-            </motion.div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Real-time Monitoring</h3>
+              <p className="text-slate-600">Monitor webhook requests in real-time with detailed payload inspection.</p>
+            </div>
             
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
-              className="text-center"
-            >
-              <div className="bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl">3</span>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Monitor & Debug</h3>
-              <p className="text-gray-600 text-sm">View real-time requests with full payload inspection</p>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Features */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid md:grid-cols-3 gap-6 mb-16"
-        >
-          <motion.div 
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <Activity className="w-8 h-8 text-green-600 mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Real-time Monitoring</h3>
-            <p className="text-gray-600 text-sm">Monitor webhook requests as they happen with detailed payload inspection and headers</p>
-          </motion.div>
-          
-          <motion.div 
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <Shield className="w-8 h-8 text-blue-600 mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Enterprise Security</h3>
-            <p className="text-gray-600 text-sm">Secure credential management, environment isolation, and production-ready security</p>
-          </motion.div>
-          
-          <motion.div 
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <Monitor className="w-8 h-8 text-purple-600 mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">DevOps Stack</h3>
-            <p className="text-gray-600 text-sm">Docker, Kubernetes, Prometheus, Grafana monitoring stack included</p>
-          </motion.div>
-        </motion.div>
-
-        {/* CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="text-center"
-        >
-          <motion.button
-            onClick={() => onNavigate('dashboard')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 inline-flex items-center shadow-lg"
-          >
-            <Play className="mr-2 w-5 h-5" />
-            Launch Dashboard
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </motion.button>
-          
-          <div className="mt-8 text-sm text-gray-500">
-            <p className="mb-2">🚀 Production Ready • 🔒 Secure • 📊 Observable</p>
-            <div className="flex justify-center items-center gap-4 text-xs">
-              <span className="flex items-center"><Code className="w-3 h-3 mr-1" /> React + Node.js</span>
-              <span className="flex items-center"><Database className="w-3 h-3 mr-1" /> PostgreSQL</span>
-              <span className="flex items-center"><Container className="w-3 h-3 mr-1" /> Docker</span>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Secure & Reliable</h3>
+              <p className="text-slate-600">Enterprise-grade security with reliable webhook delivery.</p>
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </section>
+
+      {/* How it Works */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">How it works</h2>
+            <p className="text-lg text-slate-600">Get started in three simple steps</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-lg p-6 border border-slate-200">
+              <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-bold mb-4">
+                1
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Create Endpoint</h3>
+              <p className="text-slate-600">Generate a unique webhook URL instantly with a custom name.</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6 border border-slate-200">
+              <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-bold mb-4">
+                2
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Configure Service</h3>
+              <p className="text-slate-600">Add the webhook URL to your service (Stripe, GitHub, etc.).</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6 border border-slate-200">
+              <div className="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-sm font-bold mb-4">
+                3
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Monitor Requests</h3>
+              <p className="text-slate-600">View real-time webhook requests with full payload details.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-slate-900 mb-2">99.9%</div>
+              <div className="text-slate-600">Uptime</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-slate-900 mb-2">&lt;100ms</div>
+              <div className="text-slate-600">Response Time</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-slate-900 mb-2">1M+</div>
+              <div className="text-slate-600">Webhooks Processed</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-slate-900 mb-2">24/7</div>
+              <div className="text-slate-600">Monitoring</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to get started?</h2>
+          <p className="text-xl text-slate-300 mb-8">Start testing your webhooks in seconds</p>
+          <button
+            onClick={() => onNavigate('dashboard')}
+            className="inline-flex items-center px-6 py-3 bg-white text-slate-900 font-medium rounded-md hover:bg-slate-100 transition-colors"
+          >
+            Open Dashboard
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="w-6 h-6 bg-slate-900 rounded flex items-center justify-center mr-2">
+                <Globe className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-slate-600">WebhookHub</span>
+            </div>
+            <div className="text-sm text-slate-500">
+              Built for developers, by developers
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

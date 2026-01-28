@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  Home, Plus, Webhook, Activity, Clock, 
-  Copy, Trash2, RefreshCw, AlertCircle,
-  CheckCircle, Database, Server, Zap
+  ArrowLeft, Plus, Globe, Activity, Clock, 
+  Copy, Trash2, RefreshCw, AlertTriangle,
+  CheckCircle2, Database, Server, Zap, ExternalLink
 } from 'lucide-react'
+import { apiRequest, getWebhookUrl } from '../utils/api'
 
 const Dashboard = ({ onNavigate }) => {
   const [endpoints, setEndpoints] = useState([])
@@ -21,8 +22,8 @@ const Dashboard = ({ onNavigate }) => {
   const fetchData = async () => {
     try {
       const [endpointsRes, webhooksRes] = await Promise.all([
-        fetch('/api/endpoints'),
-        fetch('/api/webhooks')
+        apiRequest('/api/endpoints'),
+        apiRequest('/api/webhooks')
       ])
       setEndpoints(await endpointsRes.json())
       setWebhooks(await webhooksRes.json())
@@ -36,9 +37,8 @@ const Dashboard = ({ onNavigate }) => {
     
     setLoading(true)
     try {
-      const response = await fetch('/api/endpoints', {
+      const response = await apiRequest('/api/endpoints', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newEndpointName })
       })
       
@@ -56,7 +56,7 @@ const Dashboard = ({ onNavigate }) => {
 
   const deleteEndpoint = async (id) => {
     try {
-      await fetch(`/api/endpoints/${id}`, { method: 'DELETE' })
+      await apiRequest(`/api/endpoints/${id}`, { method: 'DELETE' })
       fetchData()
       showNotification('Endpoint deleted')
     } catch (error) {
@@ -65,7 +65,7 @@ const Dashboard = ({ onNavigate }) => {
   }
 
   const copyWebhookUrl = (id) => {
-    const url = `${window.location.origin}/w/${id}`
+    const url = getWebhookUrl(id)
     navigator.clipboard.writeText(url)
     showNotification('Webhook URL copied to clipboard!')
   }
@@ -77,7 +77,7 @@ const Dashboard = ({ onNavigate }) => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Notification */}
       <AnimatePresence>
         {notification && (
@@ -85,279 +85,219 @@ const Dashboard = ({ onNavigate }) => {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50"
+            className="fixed top-4 right-4 bg-emerald-600 text-white px-4 py-3 rounded-md shadow-lg z-50 border border-emerald-500"
           >
-            {notification}
+            <div className="flex items-center">
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              {notification}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white border-b border-gray-200 shadow-sm"
-      >
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center mr-3">
+                  <Globe className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold text-slate-900">WebhookHub</h1>
+                  <p className="text-xs text-slate-500">Dashboard</p>
+                </div>
+              </div>
+              <div className="ml-4 flex items-center">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="ml-2 text-sm text-slate-600">Live</span>
+              </div>
+            </div>
+            <button
+              onClick={() => onNavigate('home')}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors"
             >
-              <Webhook className="w-6 h-6 text-blue-600 mr-3" />
-            </motion.div>
-            <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="ml-3"
-            >
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-            </motion.div>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </button>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onNavigate('home')}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors text-sm"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Back to Home
-          </motion.button>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="container mx-auto px-6 py-8">
-        {/* Stats */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid md:grid-cols-3 gap-6 mb-8"
-        >
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Endpoints</p>
-                <motion.p 
-                  key={endpoints.length}
-                  initial={{ scale: 1.2 }}
-                  animate={{ scale: 1 }}
-                  className="text-2xl font-bold text-gray-900"
-                >
-                  {endpoints.length}
-                </motion.p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg border border-slate-200 p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                <Server className="w-5 h-5 text-blue-600" />
               </div>
-              <Server className="w-8 h-8 text-blue-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-slate-600">Active Endpoints</p>
+                <p className="text-2xl font-bold text-slate-900">{endpoints.length}</p>
+              </div>
             </div>
-          </motion.div>
+          </div>
           
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Webhooks Received</p>
-                <motion.p 
-                  key={webhooks.length}
-                  initial={{ scale: 1.2 }}
-                  animate={{ scale: 1 }}
-                  className="text-2xl font-bold text-gray-900"
-                >
-                  {webhooks.length}
-                </motion.p>
+          <div className="bg-white rounded-lg border border-slate-200 p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                <Activity className="w-5 h-5 text-emerald-600" />
               </div>
-              <Activity className="w-8 h-8 text-green-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-slate-600">Total Requests</p>
+                <p className="text-2xl font-bold text-slate-900">{webhooks.length}</p>
+              </div>
             </div>
-          </motion.div>
+          </div>
           
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Status</p>
-                <p className="text-lg font-medium text-green-600 flex items-center">
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                  </motion.div>
-                  Online
-                </p>
+          <div className="bg-white rounded-lg border border-slate-200 p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center">
+                <Database className="w-5 h-5 text-slate-600" />
               </div>
-              <Database className="w-8 h-8 text-purple-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-slate-600">System Status</p>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2" />
+                  <p className="text-sm font-medium text-emerald-600">Operational</p>
+                </div>
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Endpoints */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Server className="w-5 h-5 mr-2 text-blue-600" />
-                Webhook Endpoints
-              </h2>
-              <motion.button
-                whileHover={{ rotate: 180 }}
-                onClick={fetchData}
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </motion.button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Endpoints Panel */}
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">Webhook Endpoints</h2>
+                <button
+                  onClick={fetchData}
+                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
             </div>
+            
+            <div className="p-6">
+              <div className="flex gap-3 mb-6">
+                <input
+                  type="text"
+                  placeholder="Enter endpoint name (e.g., stripe-webhooks)"
+                  value={newEndpointName}
+                  onChange={(e) => setNewEndpointName(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onKeyPress={(e) => e.key === 'Enter' && createEndpoint()}
+                />
+                <button
+                  onClick={createEndpoint}
+                  disabled={loading || !newEndpointName.trim()}
+                  className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
 
-            <div className="flex gap-2 mb-6">
-              <input
-                type="text"
-                placeholder="Enter endpoint name"
-                value={newEndpointName}
-                onChange={(e) => setNewEndpointName(e.target.value)}
-                className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
-                onKeyPress={(e) => e.key === 'Enter' && createEndpoint()}
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={createEndpoint}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors disabled:opacity-50"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </motion.button>
-            </div>
-
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              <AnimatePresence>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {endpoints.map((endpoint) => (
-                  <motion.div 
-                    key={endpoint.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-gray-900">{endpoint.name}</h3>
-                      <div className="flex gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                  <div key={endpoint.id} className="border border-slate-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full mr-3" />
+                        <h3 className="font-medium text-slate-900">{endpoint.name}</h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
                           onClick={() => copyWebhookUrl(endpoint.id)}
-                          className="p-1 text-gray-600 hover:text-gray-900 transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
                           title="Copy URL"
                         >
                           <Copy className="w-4 h-4" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                        </button>
+                        <button
                           onClick={() => deleteEndpoint(endpoint.id)}
-                          className="p-1 text-gray-600 hover:text-red-600 transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </motion.button>
+                        </button>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600 font-mono">/w/{endpoint.id}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Created: {new Date(endpoint.createdAt).toLocaleDateString()}
+                    <div className="text-xs font-mono text-slate-500 bg-slate-50 rounded px-2 py-1">
+                      /w/{endpoint.id}
+                    </div>
+                    <p className="text-xs text-slate-400 mt-2">
+                      Created {new Date(endpoint.createdAt).toLocaleDateString()}
                     </p>
-                  </motion.div>
+                  </div>
                 ))}
-              </AnimatePresence>
-              
-              {endpoints.length === 0 && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-8 text-gray-500"
-                >
-                  <AlertCircle className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                  <p>No endpoints yet</p>
-                  <p className="text-xs mt-1">Create your first webhook endpoint above</p>
-                </motion.div>
-              )}
+                
+                {endpoints.length === 0 && (
+                  <div className="text-center py-12">
+                    <Server className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-sm font-medium text-slate-900 mb-2">No endpoints yet</h3>
+                    <p className="text-sm text-slate-500">Create your first webhook endpoint to get started</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Webhooks */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm"
-          >
-            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <Activity className="w-5 h-5 mr-2 text-green-600" />
-              Recent Webhooks
-              {webhooks.length > 0 && (
-                <motion.span
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="ml-2 w-2 h-2 bg-green-500 rounded-full"
-                />
-              )}
-            </h2>
-
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              <AnimatePresence>
+          {/* Webhooks Panel */}
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
+            </div>
+            
+            <div className="p-6">
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {webhooks.slice(0, 10).map((webhook) => (
-                  <motion.div 
-                    key={webhook.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-                  >
+                  <div key={webhook.id} className="border border-slate-200 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-600">
-                        {webhook.method} /{webhook.endpoint}
-                      </span>
-                      <span className="text-xs text-gray-500 flex items-center">
+                      <div className="flex items-center">
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          webhook.method === 'POST' ? 'bg-blue-100 text-blue-800' :
+                          webhook.method === 'GET' ? 'bg-emerald-100 text-emerald-800' :
+                          webhook.method === 'PUT' ? 'bg-amber-100 text-amber-800' :
+                          'bg-slate-100 text-slate-800'
+                        }`}>
+                          {webhook.method}
+                        </span>
+                        <span className="ml-2 text-sm font-medium text-slate-900">
+                          /{webhook.endpoint}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-xs text-slate-500">
                         <Clock className="w-3 h-3 mr-1" />
                         {new Date(webhook.timestamp).toLocaleTimeString()}
-                      </span>
+                      </div>
                     </div>
                     
                     {webhook.body && (
-                      <div className="mt-2">
-                        <p className="text-xs text-gray-600 mb-1">Payload:</p>
-                        <div className="text-xs text-gray-700 font-mono bg-white rounded p-2 max-h-16 overflow-y-auto border">
-                          {typeof webhook.body === 'string' ? webhook.body : JSON.stringify(webhook.body, null, 2)}
+                      <div className="mt-3">
+                        <div className="text-xs font-mono text-slate-600 bg-slate-50 rounded p-2 max-h-20 overflow-y-auto">
+                          {typeof webhook.body === 'string' ? webhook.body.substring(0, 200) : JSON.stringify(webhook.body, null, 2).substring(0, 200)}
+                          {(typeof webhook.body === 'string' ? webhook.body : JSON.stringify(webhook.body)).length > 200 && '...'}
                         </div>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 ))}
-              </AnimatePresence>
-              
-              {webhooks.length === 0 && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-8 text-gray-500"
-                >
-                  <Webhook className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                  <p>No webhooks received</p>
-                  <p className="text-xs mt-1">Send a POST request to any endpoint</p>
-                </motion.div>
-              )}
+                
+                {webhooks.length === 0 && (
+                  <div className="text-center py-12">
+                    <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-sm font-medium text-slate-900 mb-2">No activity yet</h3>
+                    <p className="text-sm text-slate-500">Webhook requests will appear here</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
