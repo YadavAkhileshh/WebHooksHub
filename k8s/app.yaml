@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhookhub
+  namespace: webhookhub
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: webhookhub
+  template:
+    metadata:
+      labels:
+        app: webhookhub
+    spec:
+      containers:
+      - name: webhookhub
+        image: webhookshub-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webhookhub-secret
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: webhookhub-secret
+              key: REDIS_URL
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: webhookhub-config
+              key: NODE_ENV
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: webhookhub-config
+              key: PORT
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhookhub-service
+  namespace: webhookhub
+spec:
+  type: LoadBalancer
+  selector:
+    app: webhookhub
+  ports:
+  - port: 80
+    targetPort: 3000

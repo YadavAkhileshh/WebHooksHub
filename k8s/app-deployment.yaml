@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhookhub
+  namespace: webhookhub
+  labels:
+    app: webhookhub
+spec:
+  replicas: 3  # Run 3 instances for high availability
+  selector:
+    matchLabels:
+      app: webhookhub
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: webhookhub
+    spec:
+      containers:
+      - name: webhookhub
+        image: webhookhub:latest
+        imagePullPolicy: Never
+
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: webhookhub-config
+              key: NODE_ENV
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: webhookhub-config
+              key: PORT
+        - name: BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: webhookhub-config
+              key: BASE_URL
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webhookhub-secret
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: webhookhub-secret
+              key: REDIS_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhookhub-service
+  namespace: webhookhub
+spec:
+  selector:
+    app: webhookhub
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: NodePort
